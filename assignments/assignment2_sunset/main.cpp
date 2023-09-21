@@ -20,9 +20,13 @@ const int SCREEN_HEIGHT = 720;
 float vertices[18] = {
 	//x   //y  //z   
 	//Triangle 1
-	0.0, 1.0, 1.0, 
+	1.0, 1.0, 0.0, 
+	1.0, -1.0, 0.0,
+	0.0, 0.0, 0.0,
 	//Triangle 2
-	 //0.5, -0.5, -1.0,
+	 -1.0, -1.0, 0.0,
+	 -1.0, -0.5, -1.0,
+	 0.5, -0.5, -1.0,
 };
 
 
@@ -68,7 +72,7 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
-	unsigned int vao = createVAO(vertices, 3);
+	unsigned int vao = createVAO(vertices, 6);
 
 	//glUseProgram(shader);
 	glBindVertexArray(vao);
@@ -88,7 +92,7 @@ int main() {
 		shader.setFloat("_Brightness", triangleBrightness);
 		//glUniform1f(glGetUniformLocation(shader,"_Brightness"), triangleBrightness);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		//Render UI
 		{
