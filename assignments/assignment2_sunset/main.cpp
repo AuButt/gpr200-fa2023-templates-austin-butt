@@ -1,4 +1,4 @@
-#include <ab/shader.h> //At top of file
+ #include <ab/shader.h> //At top of file
 #include <stdio.h>
 #include <math.h>
 
@@ -9,27 +9,34 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+struct Vertex {
+	float x, y, z;
+	float u, v;
+};
+
 unsigned int createShader(GLenum shaderType, const char* sourceCode);
 unsigned int createShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
-unsigned int createVAO(float* vertexData, int numVertices);
+unsigned int createVAO(Vertex* vertexData, int numVertices, unsigned int* indicesData, int numIndices);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
-float vertices[18] = {
-	//x   //y  //z   
-	//Triangle 1
-	1.0, 1.0, 0.0, 
-	1.0, -1.0, 0.0,
-	0.0, 0.0, 0.0,
-	//Triangle 2
-	 -1.0, -1.0, 0.0,
-	 -1.0, -0.5, -1.0,
-	 0.5, -0.5, -1.0,
+
+
+Vertex vertices[4] = {
+	//x       y      z      u    v
+   { -0.9 ,  -0.9 , 0.0 , 1.0 , 0.0 }, //Bottom left
+   { 0.9 ,  -0.9 , 0.0 , 1.0 , 0.0 }, //Bottom right
+   { 0.9 , 0.9 , 0.0 , 1.0 , 0.0 },  //Top right
+   { -0.9 , 0.9 , 0.0 , 1.0 , 0.0 }  //Top left
 };
 
 
+unsigned int indices[6] = {
+	-0.9, -0.9, 0.0, //Triangle 1
+	 0.9, 0.9, 0.0  //Triangle 2
+};
 
 float triangleColor[3] = { 1.0f, 0.5f, 0.0f };
 float triangleBrightness = 1.0f;
@@ -72,7 +79,7 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
-	unsigned int vao = createVAO(vertices, 6);
+	unsigned int vao = createVAO(vertices, 4, indices, 2);
 
 	//glUseProgram(shader);
 	glBindVertexArray(vao);
@@ -92,7 +99,9 @@ int main() {
 		shader.setFloat("_Brightness", triangleBrightness);
 		//glUniform1f(glGetUniformLocation(shader,"_Brightness"), triangleBrightness);
 
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 4);
+		//Draw using indices
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
 		//Render UI
 		{
@@ -118,10 +127,23 @@ int main() {
 	printf("Shutting down...");
 }
 
-unsigned int createVAO(float* vertexData, int numVertices) {
+unsigned int createVAO(Vertex* vertexData, int numVertices, unsigned int* indicesData, int numIndices) {
 	unsigned int vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
+
+	unsigned int ebo;	//Element buffer object
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * numIndices, indicesData, GL_STATIC_DRAW);
+
+	//Position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, x));
+	glEnableVertexAttribArray(0);
+
+	//UV
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(offsetof(Vertex, u)));
+	glEnableVertexAttribArray(1);
 
 	//Define a new buffer id
 	unsigned int vbo;
