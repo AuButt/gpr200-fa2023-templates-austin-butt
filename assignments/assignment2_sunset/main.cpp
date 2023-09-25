@@ -38,7 +38,9 @@ unsigned int indices[6] = {
 	 2, 3, 0  //Triangle 2
 };
 
-float triangleColor[3] = { 5.0f, 1.0f, 0.0f };	//color
+float sunColor[3] = { 1.0f, 1.0f, 0.0f };	//color
+float skyColorTop[3] = { 0.5f, 0.5f, 1.0f };	//color
+float skyColorBot[3] = { 1.0f, 0.5f, 0.3f };	//color
 bool showImGUIDemoWindow = false;
 
 
@@ -91,9 +93,9 @@ int main() {
 		//shader.setVec3("triangleColor", triangleColor[0], triangleColor[1], triangleColor[2]);
 		shader.setFloat("iTime", (float)glfwGetTime());
 		shader.setVec3("iResolution", SCREEN_WIDTH, SCREEN_HEIGHT, 0.0);
-		shader.setVec3("sunColor", 1.0, 1.0, 0.0);
-		shader.setVec3("skyColorTop", 0.5, 0.5, 1.0);
-		shader.setVec3("skyColorBot", 1.0, 0.5, 0.3);
+		shader.setVec3("sunColor", sunColor[0], sunColor[1], sunColor[2]);
+		shader.setVec3("skyColorTop", skyColorTop[0], skyColorTop[1], skyColorTop[2]);
+		shader.setVec3("skyColorBot", skyColorBot[0], skyColorBot[1], skyColorBot[2]);
 		
 		//Draw using indices
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
@@ -108,7 +110,9 @@ int main() {
 
 			ImGui::Begin("Settings");
 			ImGui::Checkbox("Show Demo Window", &showImGUIDemoWindow);
-			ImGui::ColorEdit3("Triangle Color", triangleColor);
+			ImGui::ColorEdit3("Sun", sunColor);
+			ImGui::ColorEdit3("Sky Ceiling", skyColorTop);
+			ImGui::ColorEdit3("Sky Floor", skyColorBot);
 			ImGui::End();
 			if (showImGUIDemoWindow) {
 				ImGui::ShowDemoWindow(&showImGUIDemoWindow);
