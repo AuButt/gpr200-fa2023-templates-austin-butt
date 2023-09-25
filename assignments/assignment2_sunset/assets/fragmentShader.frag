@@ -9,6 +9,7 @@
     uniform float sunRadius;
     uniform float sunSpeed;
     uniform vec3 bgColor;
+    uniform float waveSpeed;
 	in vec2 myuv;
 
     float roundedRectSDF( in vec2 p, in vec2 b, in float r )
@@ -42,89 +43,9 @@
     //Amount of smoothness for anti-aliasing
     float px = 2.0*aspect/iResolution.y;
     
-    //rectangle
-    float a = 1.564; //rotation
-    vec2 p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(-0.7,-1.5); //position (axis)
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.3,0.1),0.0)));
-    
-    //rectangle 2
-    a = 1.564; //rotation
-    p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(-0.8,0.-1.33); //position (axis)
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.2,0.09),0.0)));
-    
-    //Rounded rectangle 1
-    a = 1.564; //rotation
-    p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(-0.6,0.-1.33); //position (axis)
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.2,0.09), 0.2)));
-    
-    //rectangle 3
-    a = 1.564; //rotation
-    p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(-0.9,0.4); //position (axis)
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.15,0.05),0.0)));
-    
-    //rectangle 4
-    a = 1.564; //rotation
-    p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(-0.65,1.0); //position (axis)
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.4,0.2),0.0)));
-    
-    //Rounded rectangle 2
-    a = 1.564; //rotation
-    p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(-0.2,1.15); //position (axis)
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.4,0.02), 0.24)));
-    
-    //rectangle 5
-    a = 1.564; //rotation
-    p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(-0.8,0.0); //position (axis)
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.2,0.09),0.0)));
-    
-    //rectangle 6
-    a = 1.564; //rotation
-    p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(-0.8,-0.2); //position (axis)
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.3,0.09),0.0)));
-    
-    //rectangle 6
-    a = 1.564; //rotation
-    p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(-0.6,-0.8); //position (axis)
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.5,0.09),0.0)));
-    
-    //rectangle 7
-    a = 1.564; //rotation
-    p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(-0.85,-0.95); //position
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.2,0.09),0.0)));
-    
-    //Rounded rectangle 3
-    a = -1.0; //rotation
-    p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(1.0,0.38); //position (axis)
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.2,0.1), 0.24)));
-    
-    //rectangle 8
-    a = 1.564; //rotation
-    p = mat2(cos(a),-sin(a),sin(a),cos(a))*uv; //bounds with resolution
-    p-=vec2(-0.85,1.5); //position
-    //                  color                                               stretch
-    col = mix(col,vec3(bgColor) * (setter+ 0.4),smoothstep(px,-px,roundedRectSDF(p,vec2(0.2,0.09),0.0)));
+    float wave = -0.7 + sin(uv.x + iTime*waveSpeed)*0.05;
+    wave = step(wave,uv.y);
+    col = mix(bgColor, col, wave);
     
     // Output to screen
 	FragColor = vec4(col,1.0);
