@@ -19,8 +19,8 @@ unsigned int createShaderProgram(const char* vertexShaderSource, const char* fra
 unsigned int createVAO(Vertex* vertexData, int numVertices, unsigned int* indicesData, int numIndices);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
-const int SCREEN_WIDTH = 1080;
-const int SCREEN_HEIGHT = 720;
+const int SCREEN_WIDTH = 800; //using 800 x 450 because of shadertoy
+const int SCREEN_HEIGHT = 450;
 
 
 
@@ -90,6 +90,7 @@ int main() {
 		//Set uniforms
 		//shader.setVec3("triangleColor", triangleColor[0], triangleColor[1], triangleColor[2]);
 		shader.setFloat("iTime", (float)glfwGetTime());
+		shader.setVec3("iResolution", SCREEN_WIDTH, SCREEN_HEIGHT, 0.0);
 		shader.setVec3("sunColor", 1.0, 1.0, 0.0);
 		shader.setVec3("skyColorTop", 0.5, 0.5, 1.0);
 		shader.setVec3("skyColorBot", 1.0, 0.5, 0.3);

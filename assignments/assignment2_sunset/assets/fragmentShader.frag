@@ -5,6 +5,7 @@
 	uniform vec3 sunColor;
 	uniform vec3 skyColorTop;
 	uniform vec3 skyColorBot;
+    uniform vec3 iResolution;
 	in vec2 myuv;
 
     float roundedRectSDF( in vec2 p, in vec2 b, in float r )
@@ -19,7 +20,7 @@
 
 	//remaps space to -1,-1 -> 1,1
     uv = uv * 2.0 - 1.0;
-    uv.x *= 1920.0 / 1080.0;  //resolution
+    uv.x *= iResolution.x / iResolution.y;  //resolution
     //circle
     vec2 center = vec2(0, sin(iTime) - 0.6 );
     float radius = 0.3;
@@ -34,9 +35,9 @@
     
     vec3 col = mix(sunColor, skyColor, t);
 
-    float aspect = 1920.0 / 1080.0;
+    float aspect = iResolution.x / iResolution.y;
     //Amount of smoothness for anti-aliasing
-    float px = 2.0*aspect/1080.0;
+    float px = 2.0*aspect/iResolution.y;
     
     //rectangle
     float a = 1.564; //rotation
