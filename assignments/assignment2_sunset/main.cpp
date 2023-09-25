@@ -26,21 +26,20 @@ const int SCREEN_HEIGHT = 720;
 
 Vertex vertices[4] = {
 	//x       y      z      u    v
-   { -0.9 ,  -0.9 , 0.0 , 1.0 , 0.0 }, //Bottom left
-   { 0.9 ,  -0.9 , 0.0 , 1.0 , 0.0 }, //Bottom right
-   { 0.9 , 0.9 , 0.0 , 1.0 , 0.0 },  //Top right
-   { -0.9 , 0.9 , 0.0 , 1.0 , 0.0 }  //Top left
+   { -1.0 , -1.0 , 0.0 , 0.0 , 0.0 }, //Bottom left
+   { 1.0 ,  -1.0,  0.0 , 1.0 , 0.0 }, //Bottom right
+   { 1.0 ,  1.0 ,  0.0 , 1.0 , 1.0 },  //Top right
+   { -1.0 ,  1.0 , 0.0 , 0.0 , 1.0 }  //Top left
 };
 
 
 unsigned int indices[6] = {
-	-0.9, -0.9, 0.0, //Triangle 1
-	 0.9, 0.9, 0.0  //Triangle 2
+	0, 1, 2, //Triangle 1
+	 2, 3, 0  //Triangle 2
 };
 
-float triangleColor[3] = { 1.0f, 0.5f, 0.0f };
-float triangleBrightness = 1.0f;
-bool showImGUIDemoWindow = true;
+float triangleColor[3] = { 5.0f, 1.0f, 0.0f };	//color
+bool showImGUIDemoWindow = false;
 
 
 int main() {
@@ -63,15 +62,10 @@ int main() {
 		return 1;
 	}
 
-	//std::string vertexShaderSource = ab::loadShaderSourceFromFile("assets/vertexShader.vert");
-	//std::string fragmentShaderSource = ab::loadShaderSourceFromFile("assets/fragmentShader.frag");
-	//unsigned int shader = createShaderProgram(vertexShaderSource.c_str(), fragmentShaderSource.c_str());
 
 	//Example usage in main()
 	ab::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
 	shader.use();
-	//shader.setFloat("_MyFloat", floatValue);
-	//shader.setVec2("_MyVec2", vec2[0], vec2[1]);
 
 	//Initialize ImGUI
 	IMGUI_CHECKVERSION();
@@ -79,13 +73,13 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
-	unsigned int vao = createVAO(vertices, 4, indices, 2);
+	unsigned int vao = createVAO(vertices, 4, indices, 6);
 
 	//glUseProgram(shader);
 	glBindVertexArray(vao);
 
 	//Wireframe
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -94,14 +88,16 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//Set uniforms
-		shader.setVec3("_Color", triangleColor[0], triangleColor[1], triangleColor[2]);
-		//glUniform3f(glGetUniformLocation(shader, "_Color"), triangleColor[0], triangleColor[1], triangleColor[2]);
-		shader.setFloat("_Brightness", triangleBrightness);
-		//glUniform1f(glGetUniformLocation(shader,"_Brightness"), triangleBrightness);
-
-		glDrawArrays(GL_TRIANGLES, 0, 4);
+		//shader.setVec3("triangleColor", triangleColor[0], triangleColor[1], triangleColor[2]);
+		shader.setFloat("iTime", (float)glfwGetTime());
+		shader.setVec3("sunColor", 1.0, 1.0, 0.0);
+		shader.setVec3("skyColorTop", 0.5, 0.5, 1.0);
+		shader.setVec3("skyColorBot", 1.0, 0.5, 0.3);
+		
 		//Draw using indices
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+
+
 
 		//Render UI
 		{
@@ -111,8 +107,7 @@ int main() {
 
 			ImGui::Begin("Settings");
 			ImGui::Checkbox("Show Demo Window", &showImGUIDemoWindow);
-			ImGui::ColorEdit3("Color", triangleColor);
-			ImGui::SliderFloat("Brightness", &triangleBrightness, 0.0f, 1.0f);
+			ImGui::ColorEdit3("Triangle Color", triangleColor);
 			ImGui::End();
 			if (showImGUIDemoWindow) {
 				ImGui::ShowDemoWindow(&showImGUIDemoWindow);
@@ -137,6 +132,13 @@ unsigned int createVAO(Vertex* vertexData, int numVertices, unsigned int* indice
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * numIndices, indicesData, GL_STATIC_DRAW);
 
+	//Define a new buffer id
+	unsigned int vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	//Allocate space for + send vertex data to GPU.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * numVertices, vertexData, GL_STATIC_DRAW);
+
 	//Position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, x));
 	glEnableVertexAttribArray(0);
@@ -144,17 +146,6 @@ unsigned int createVAO(Vertex* vertexData, int numVertices, unsigned int* indice
 	//UV
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(offsetof(Vertex, u)));
 	glEnableVertexAttribArray(1);
-
-	//Define a new buffer id
-	unsigned int vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	//Allocate space for + send vertex data to GPU.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numVertices * 3, vertexData, GL_STATIC_DRAW);
-
-	//Position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (const void*)0);
-	glEnableVertexAttribArray(0);
 
 	return vao;
 }
