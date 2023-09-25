@@ -41,6 +41,9 @@ unsigned int indices[6] = {
 float sunColor[3] = { 1.0f, 1.0f, 0.0f };	//color
 float skyColorTop[3] = { 0.5f, 0.5f, 1.0f };	//color
 float skyColorBot[3] = { 1.0f, 0.5f, 0.3f };	//color
+float sunRadius = 0.3;
+float sunSpeed = 1.0;
+float bgColor[3] = { 0.1f,0.1f,0.1f };	//color
 bool showImGUIDemoWindow = false;
 
 
@@ -96,6 +99,9 @@ int main() {
 		shader.setVec3("sunColor", sunColor[0], sunColor[1], sunColor[2]);
 		shader.setVec3("skyColorTop", skyColorTop[0], skyColorTop[1], skyColorTop[2]);
 		shader.setVec3("skyColorBot", skyColorBot[0], skyColorBot[1], skyColorBot[2]);
+		shader.setFloat("sunRadius", sunRadius);
+		shader.setFloat("sunSpeed", sunSpeed);
+		shader.setVec3("bgColor", bgColor[0], bgColor[1], bgColor[2]);
 		
 		//Draw using indices
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
@@ -113,6 +119,10 @@ int main() {
 			ImGui::ColorEdit3("Sun", sunColor);
 			ImGui::ColorEdit3("Sky Ceiling", skyColorTop);
 			ImGui::ColorEdit3("Sky Floor", skyColorBot);
+
+			ImGui::SliderFloat("Sun Radius", &sunRadius, 0.0f, 1.5f);
+			ImGui::SliderFloat("Sun Speed", &sunSpeed, 0.0f, 5.0f);
+			ImGui::ColorEdit3("Foreground Color", bgColor);
 			ImGui::End();
 			if (showImGUIDemoWindow) {
 				ImGui::ShowDemoWindow(&showImGUIDemoWindow);
