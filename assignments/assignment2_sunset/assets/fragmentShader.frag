@@ -12,12 +12,6 @@
     uniform float waveSpeed;
 	in vec2 myuv;
 
-    float roundedRectSDF( in vec2 p, in vec2 b, in float r )
-    {
-    vec2 q = abs(p)-b+r;
-    return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - r;
-    }
-
 	void main(){
 
 	vec2 uv = myuv;
