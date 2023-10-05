@@ -111,5 +111,6 @@ namespace ew {
 	{
 		glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, &m[0][0]);
 	}
+
 }
 

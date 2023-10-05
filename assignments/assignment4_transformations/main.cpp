@@ -26,6 +26,8 @@ int main() {
 		return 1;
 	}
 
+	ab::Transform transform;
+
 	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Textures", NULL, NULL);
 	if (window == NULL) {
 		printf("GLFW failed to create window");
@@ -65,6 +67,8 @@ int main() {
 
 		//Set uniforms
 		shader.use();
+		shader.setMat4("_Model", transform.getModelMatrix());
+
 
 		//TODO: Set model matrix uniform
 
@@ -77,6 +81,9 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Transform");
+			//ImGui::DragFloat3("Position", &cubeTransform.position.x, 0.05f);
+			//ImGui::DragFloat3("Rotation", &cubeTransform.rotation.x, 1.0f);
+			//ImGui::DragFloat3("Scale", &cubeTransform.scale.x, 0.05f);
 			ImGui::End();
 
 			ImGui::Render();
