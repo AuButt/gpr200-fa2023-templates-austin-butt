@@ -11,6 +11,7 @@
 #include <ew/shader.h>
 #include <ew/ewMath/vec3.h>
 #include <ew/procGen.h>
+#include <ab/transformations.h>
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
