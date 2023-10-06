@@ -19,14 +19,15 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 const int SCREEN_WIDTH = 720;
 const int SCREEN_HEIGHT = 720;
 
+const int NUM_CUBES = 4;
 int main() {
 	printf("Initializing...");
 	if (!glfwInit()) {
 		printf("GLFW failed to init!");
 		return 1;
 	}
-
-	ab::Transform transform;
+	//sets transform structs
+	ab::Transform transform[NUM_CUBES];
 
 	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Textures", NULL, NULL);
 	if (window == NULL) {
@@ -67,7 +68,7 @@ int main() {
 
 		//Set uniforms
 		shader.use();
-		shader.setMat4("_Model", transform.getModelMatrix());
+		shader.setMat4("_Model", transform[i].getModelMatrix());
 
 
 		//TODO: Set model matrix uniform
@@ -81,9 +82,16 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Transform");
-			//ImGui::DragFloat3("Position", &cubeTransform.position.x, 0.05f);
-			//ImGui::DragFloat3("Rotation", &cubeTransform.rotation.x, 1.0f);
-			//ImGui::DragFloat3("Scale", &cubeTransform.scale.x, 0.05f);
+			for (size_t i = 0; i < NUM_CUBES; i++)
+			{
+				ImGui::PushID(i);
+				if (ImGui::CollapsingHeader("Transform")) {
+					ImGui::DragFloat3("Position", &transform[i].position.x, 0.05f);
+					ImGui::DragFloat3("Rotation", &transform[i].rotation.x, 0.05f);
+					ImGui::DragFloat3("Scale", &transform[i].scale.x, 0.05f);
+				}
+				ImGui::PopID();
+			}
 			ImGui::End();
 
 			ImGui::Render();
