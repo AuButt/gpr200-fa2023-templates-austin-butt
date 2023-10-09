@@ -29,6 +29,12 @@ int main() {
 	//sets transform structs
 	ab::Transform transform[NUM_CUBES];
 
+	for (size_t i = 0; i < NUM_CUBES; i++) {
+		transform[i].position.x = ((-1.0 + i * 0.5) + 0.25);
+		transform[i].position.y = ((i % 2) - 0.5);
+
+	}
+
 	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Textures", NULL, NULL);
 	if (window == NULL) {
 		printf("GLFW failed to create window");
@@ -68,13 +74,12 @@ int main() {
 
 		//Set uniforms
 		shader.use();
-		shader.setMat4("_Model", transform[0].getModelMatrix());
 
 
-
-		//TODO: Set model matrix uniform
-
-		cubeMesh.draw();
+		for (size_t i = 0; i < NUM_CUBES; i++) {
+			shader.setMat4("_Model", transform[i].getModelMatrix());
+			cubeMesh.draw();
+		}
 
 		//Render UI
 		{
