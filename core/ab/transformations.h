@@ -5,7 +5,6 @@
 
 namespace ab {
 
-
 	//Identity matrix
 	inline ew::Mat4 Identity() {
 		return ew::Mat4(

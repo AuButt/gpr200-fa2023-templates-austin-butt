@@ -68,7 +68,8 @@ int main() {
 
 		//Set uniforms
 		shader.use();
-		shader.setMat4("_Model", transform[i].getModelMatrix());
+		shader.setMat4("_Model", transform[0].getModelMatrix());
+
 
 
 		//TODO: Set model matrix uniform

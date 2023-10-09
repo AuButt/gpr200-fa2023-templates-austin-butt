@@ -9,6 +9,7 @@
 #include <imgui_impl_opengl3.h>
 
 #include <ew/shader.h>
+#include <ab/texture.h>
 
 struct Vertex {
 	float x, y, z;
@@ -58,7 +59,8 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
-	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
+	ew::Shader backShader("assets/bgShader.vert", "assets/bgShader.frag");
+	ew::Shader charShader("assets/charShader.vert", "assets/charShader.frag");
 
 	unsigned int quadVAO = createVAO(vertices, 4, indices, 6);
 
@@ -69,9 +71,42 @@ int main() {
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//Set uniforms
-		shader.use();
 
+		//Example usage in main.cpp
+		unsigned int waterTexture = loadTexture("assets/brick.png", GL_REPEAT, GL_LINEAR);
+		unsigned int noiseM = loadTexture("assets/noisemap.png", GL_REPEAT, GL_LINEAR);
+		unsigned int character = loadTexture("assets/sprite.png", GL_REPEAT, GL_LINEAR);
+
+		//Place brick in unit 0
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, waterTexture);
+		//Place noiseM in unit 1
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, noiseM);
+		
+		//Must be using this shader when setting uniforms
+		backShader.use();
+		backShader.setFloat("iTime", (float)glfwGetTime());
+		//Make sampler2D waterTexture sample from unit 0
+		backShader.setInt("_BrickTexture", 0);
+		//Make sampler2D noiseM sample from unit 1
+		backShader.setInt("_NoiseTexture", 1);
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
+
+		//Place char in unit 0
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, character);
+
+		//enables blending
+		glEnable(GL_BLEND);
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		charShader.use();
+		charShader.setInt("_CharTexture", 0);
+		charShader.setFloat("iTime", (float)glfwGetTime());
+		
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
 		//Render UI
