@@ -10,7 +10,8 @@
 
 #include <ew/shader.h>
 #include <ew/procGen.h>
-#include <ew/transform.h>
+#include <ab/transformations.h>
+#include <ab/camera.h>
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
@@ -19,7 +20,9 @@ const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
 const int NUM_CUBES = 4;
-ew::Transform cubeTransforms[NUM_CUBES];
+ab::Transform cubeTransforms[NUM_CUBES];
+
+ab::Camera camera;
 
 int main() {
 	printf("Initializing...");
@@ -40,7 +43,6 @@ int main() {
 		printf("GLAD Failed to load GL headers");
 		return 1;
 	}
-
 	//Initialize ImGUI
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -56,6 +58,17 @@ int main() {
 
 	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
 	
+	
+	//camera setup
+	camera.position = (0, 0, 5);
+	camera.target = (0, 0, 0);
+	camera.fov = 60;
+	camera.orthoSize = 6;
+	camera.orthographic = false;
+	camera.nearPlane = 0.1;
+	camera.farPlane = 100;
+	
+
 	//Cube mesh
 	ew::Mesh cubeMesh(ew::createCube(0.5f));
 
@@ -83,6 +96,9 @@ int main() {
 			cubeMesh.draw();
 		}
 
+		shader.setMat4("_CamView", camera.ViewMatrix());
+		shader.setMat4("_CamProj", camera.ProjectionMatrix());
+
 		//Render UI
 		{
 			ImGui_ImplGlfw_NewFrame();
@@ -96,7 +112,7 @@ int main() {
 				ImGui::PushID(i);
 				if (ImGui::CollapsingHeader("Transform")) {
 					ImGui::DragFloat3("Position", &cubeTransforms[i].position.x, 0.05f);
-					ImGui::DragFloat3("Rotation", &cubeTransforms[i].rotation.x, 1.0f);
+					ImGui::DragFloat3("Rotation", &cubeTransforms[i].rotation.x, 0.1f);
 					ImGui::DragFloat3("Scale", &cubeTransforms[i].scale.x, 0.05f);
 				}
 				ImGui::PopID();

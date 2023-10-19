@@ -92,11 +92,11 @@ namespace ab {
 		ew::Vec3 u = ew::Normalize(ew::Cross(f, r));
 			//use ew::Cross for cross product!
 
-		//inverse
+		//inverse rotation
 		ew::Mat4 total = { 
-			r.x, r.y, r.z, -eye.x,
-			u.x, u.y, u.z, -eye.y,
-			f.x, f.y, f.z, -eye.z,
+			r.x, r.y, r.z, -ew::Dot(r, eye),
+			u.x, u.y, u.z, -ew::Dot(u, eye),
+			f.x, f.y, f.z, -ew::Dot(f, eye),
 			0, 0, 0, 1
 		};
 
@@ -104,9 +104,9 @@ namespace ab {
 	};
 	//Orthographic projection
 	inline ew::Mat4 Orthographic(float height, float aspect, float near, float far) {
-		float right = //etc
+		float right = 1080 / 2;	//CHECK LATER
 		float left = -right;
-		float top = //look at division
+		float top = height / 2;
 		float bottom = -top;
 		return ew::Mat4(
 			2/(right - left), 0, 0, -(right + left)/(right - left),
@@ -118,7 +118,13 @@ namespace ab {
 	//Perspective projection
 	//fov = vertical aspect ratio (radians)
 	inline ew::Mat4 Perspective(float fov, float aspect, float near, float far) {
-		...
+		
+		return ew::Mat4(
+			1/(tan(fov/2) * aspect), 0, 0, 0,
+			0, 1 / (tan(fov / 2)), 0, 0,
+			0, 0, (near + far)/(near - far), (2*near*far)/(near - far),
+			0, 0, -1, 0
+		);
 	};
 
 
