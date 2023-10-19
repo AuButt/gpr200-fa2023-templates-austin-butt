@@ -1,5 +1,6 @@
 #include "../ew/ewMath/mat4.h"
 #include "../ew/ewMath/vec3.h"
+#include "../ew/ewMath/ewMath.h"
 #include "transformations.h"
 
 namespace ab{
@@ -23,7 +24,7 @@ namespace ab{
 				return ab::Orthographic(orthoSize, aspectRatio, nearPlane, farPlane);
 			}
 			else {
-				return ab::Perspective(fov, aspectRatio, nearPlane, farPlane);
+				return ab::Perspective(ew::Radians(fov), aspectRatio, nearPlane, farPlane);
 			}
 		}; //View->Clip
 	};

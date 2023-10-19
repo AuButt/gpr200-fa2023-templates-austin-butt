@@ -9,5 +9,5 @@ uniform mat4 _CamProj;
 
 void main(){
 	Normal = vNormal;
-	gl_Position =  _Model * vec4(vPos,1.0) * _CamView * _CamProj;
+	gl_Position =  _CamProj * _CamView * _Model * vec4(vPos,1.0);
 }

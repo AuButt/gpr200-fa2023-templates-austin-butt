@@ -104,7 +104,7 @@ namespace ab {
 	};
 	//Orthographic projection
 	inline ew::Mat4 Orthographic(float height, float aspect, float near, float far) {
-		float right = 1080 / 2;	//CHECK LATER
+		float right = aspect*height / 2;	//CHECK
 		float left = -right;
 		float top = height / 2;
 		float bottom = -top;

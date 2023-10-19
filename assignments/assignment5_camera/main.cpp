@@ -63,6 +63,7 @@ int main() {
 	camera.position = (0, 0, 5);
 	camera.target = (0, 0, 0);
 	camera.fov = 60;
+	camera.aspectRatio = 1080 / 720;
 	camera.orthoSize = 6;
 	camera.orthographic = false;
 	camera.nearPlane = 0.1;
@@ -118,6 +119,12 @@ int main() {
 				ImGui::PopID();
 			}
 			ImGui::Text("Camera");
+			ImGui::DragFloat3("Position", &camera.position.x, 0.05f);
+			ImGui::DragFloat3("Target", &camera.target.x, 0.05f);
+			ImGui::Checkbox("Orthographic", &camera.orthographic);
+			ImGui::SliderFloat("FOV", &camera.fov, 0.0f, 180.0f);	//issue
+			ImGui::SliderFloat("Near Plane", &camera.nearPlane, 0.0f, 100.0f);	
+			ImGui::SliderFloat("Far Place", &camera.farPlane, 0.0f, 100.0f);	
 			ImGui::End();
 			
 			ImGui::Render();
