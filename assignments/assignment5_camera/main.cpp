@@ -227,7 +227,18 @@ int main() {
 			ImGui::Checkbox("Orthographic", &camera.orthographic);
 			ImGui::SliderFloat("FOV", &camera.fov, 0.0f, 180.0f);	//issue
 			ImGui::SliderFloat("Near Plane", &camera.nearPlane, 0.0f, 100.0f);	
-			ImGui::SliderFloat("Far Place", &camera.farPlane, 0.0f, 100.0f);	
+			ImGui::SliderFloat("Far Place", &camera.farPlane, 0.0f, 100.0f);
+			if (ImGui::Button("Reset"))
+			{
+				camera.position = ew::Vec3(0, 0, 5);
+				camera.target = ew::Vec3(0, 0, 0);
+				camera.fov = 60;
+				camera.aspectRatio = (float)SCREEN_WIDTH / SCREEN_HEIGHT;
+				camera.orthoSize = 6;
+				camera.orthographic = false;
+				camera.nearPlane = 0.1;
+				camera.farPlane = 100;
+			};
 			ImGui::End();
 			
 			ImGui::Render();
