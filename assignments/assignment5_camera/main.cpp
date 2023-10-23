@@ -22,7 +22,7 @@ struct CameraControls {
 	float moveSpeed = 5.0f; //How fast to move with arrow keys (M/S)
 };
 
-void moveCamera(GLFWwindow* window, ab::Camera* camera, CameraControls* controls) {
+void moveCamera(GLFWwindow* window, ab::Camera* camera, CameraControls* controls, float deltaTime) {
 	//If right mouse is not held, release cursor and return early.
 	if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2)) {
 		//Release cursor
@@ -49,8 +49,8 @@ void moveCamera(GLFWwindow* window, ab::Camera* camera, CameraControls* controls
 	float xDelta = mouseX - controls->prevMouseX;
 	float yDelta = mouseY - controls->prevMouseY;
 	//TODO: Add to yaw and pitch
-	controls->yaw += (xDelta) * controls->mouseSensitivity;
-	controls->pitch += (yDelta) * controls->mouseSensitivity;
+	controls->yaw += (xDelta)*controls->mouseSensitivity;
+	controls->pitch += (-yDelta) * controls->mouseSensitivity;
 	//TODO: Clamp pitch between -89 and 89 degrees
 	if (controls->pitch > 89) {
 		controls->pitch = 89;
@@ -65,9 +65,41 @@ void moveCamera(GLFWwindow* window, ab::Camera* camera, CameraControls* controls
 	//Construct forward vector using yaw and pitch. Don't forget to convert to radians!
 	float newyaw = ew::Radians(controls->yaw);
 	float newpitch = ew::Radians(controls->pitch);
-	ew::Vec3 forward = (sin(newyaw) * cos(newpitch), sin(newpitch), -cos(newyaw) * cos(newpitch));
-		//By setting target to a point in front of the camera along its forward direction, our LookAt will be updated accordingly when rendering.
-		camera->target = camera->position + forward;
+	ew::Vec3 forward = ew::Vec3(sin(newyaw) * cos(newpitch), sin(newpitch), -cos(newyaw) * cos(newpitch));
+	//By setting target to a point in front of the camera along its forward direction, our LookAt will be updated accordingly when rendering.
+	camera->target = camera->position + forward;
+
+
+	//TODO: Using camera forward and world up (0,1,0), construct camera right and up vectors. Graham-schmidt process!
+	ew::Vec3 right = ew::Vec3(ew::Normalize(ew::Cross(forward, ew::Vec3(0, 1, 0))));
+	ew::Vec3 up = ew::Vec3(ew::Normalize(ew::Cross(right, forward)));
+		//TODO: Keyboard controls for moving along forward, back, right, left, up, and down. See Requirements for key mappings.
+		//EXAMPLE: Moving along forward axis if W is held.
+		//Note that this is framerate dependent, and will be very fast until you scale by deltaTime. See the next section.
+		if (glfwGetKey(window, GLFW_KEY_W)) {
+			//camera->position += forward * controls->moveSpeed;
+			camera->position += forward * controls->moveSpeed * deltaTime;
+		}
+		if (glfwGetKey(window, GLFW_KEY_S)) {
+			camera->position += -forward * controls->moveSpeed * deltaTime;
+		}
+		if (glfwGetKey(window, GLFW_KEY_D)) {
+			camera->position += right * controls->moveSpeed * deltaTime;
+		}
+		if (glfwGetKey(window, GLFW_KEY_A)) {
+			camera->position += -right * controls->moveSpeed * deltaTime;
+		}
+		if (glfwGetKey(window, GLFW_KEY_E)) {
+			camera->position += up * controls->moveSpeed * deltaTime;
+		}
+		if (glfwGetKey(window, GLFW_KEY_Q)) {
+			camera->position += -up * controls->moveSpeed * deltaTime;
+		}
+
+	//Setting camera.target should be done after changing position. Otherwise, it will use camera.position from the previous frame and lag behind
+	camera->target = camera->position + forward;
+
+
 
 };
 
@@ -120,10 +152,10 @@ int main() {
 	
 	
 	//camera setup
-	camera.position = (0, 0, 5);
-	camera.target = (0, 0, 0);
+	camera.position = ew::Vec3(0, 0, 5);
+	camera.target = ew::Vec3(0, 0, 0);
 	camera.fov = 60;
-	camera.aspectRatio = 1080 / 720;
+	camera.aspectRatio = (float) SCREEN_WIDTH / SCREEN_HEIGHT;
 	camera.orthoSize = 6;
 	camera.orthographic = false;
 	camera.nearPlane = 0.1;
@@ -140,14 +172,12 @@ int main() {
 		cubeTransforms[i].position.y = i / (NUM_CUBES / 2) - 0.5;
 	}
 
+	float prevTime = (float)glfwGetTime(); //Timestamp of previous frame
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		//Clear both color buffer AND depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//camera controls
-		moveCamera(window, &camera, &cameraControls);
 
 		//Set uniforms
 		shader.use();
@@ -159,6 +189,16 @@ int main() {
 			shader.setMat4("_Model", cubeTransforms[i].getModelMatrix());
 			cubeMesh.draw();
 		}
+		
+		//Calculate deltaTime
+		float time = (float)glfwGetTime(); //Timestamp of current frame
+		float deltaTime = time - prevTime;
+		prevTime = time;
+
+		//Pass deltaTime into moveCamera. Update this function to include a 4th parameter.
+		//camera controls
+
+		moveCamera(window, &camera, &cameraControls, deltaTime);
 
 		shader.setMat4("_CamView", camera.ViewMatrix());
 		shader.setMat4("_CamProj", camera.ProjectionMatrix());
