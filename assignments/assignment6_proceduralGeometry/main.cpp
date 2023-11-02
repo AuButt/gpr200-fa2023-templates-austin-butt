@@ -14,6 +14,7 @@
 #include <ew/transform.h>
 #include <ew/camera.h>
 #include <ew/cameraController.h>
+#include <ab/procGen.h>
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void resetCamera(ew::Camera& camera, ew::CameraController& cameraController);
@@ -81,9 +82,19 @@ int main() {
 	//Create cube
 	ew::MeshData cubeMeshData = ew::createCube(0.5f);
 	ew::Mesh cubeMesh(cubeMeshData);
-
+	
 	//Initialize transforms
 	ew::Transform cubeTransform;
+	//p6
+	//Create mesh data 
+	ew::MeshData sphereMeshData = ab::createSphere(0.5f, 64);
+
+	//Create mesh renderer
+	ew::Mesh sphereMesh(sphereMeshData);
+
+		//Initialize transform
+	ew::Transform sphereTransform;
+	sphereTransform.position = ew::Vec3(1.0f, 0.0f, 0.0f);
 
 	resetCamera(camera,cameraController);
 
@@ -111,6 +122,9 @@ int main() {
 		shader.setInt("_Mode", appSettings.shadingModeIndex);
 		shader.setVec3("_Color", appSettings.shapeColor);
 		shader.setMat4("_ViewProjection", camera.ProjectionMatrix() * camera.ViewMatrix());
+		//p6
+		shader.setMat4("_Model", sphereTransform.getModelMatrix());
+		sphereMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
 		//Euler angels to forward vector
 		ew::Vec3 lightRot = appSettings.lightRotation * ew::DEG2RAD;
