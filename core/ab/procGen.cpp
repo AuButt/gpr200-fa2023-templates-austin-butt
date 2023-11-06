@@ -34,6 +34,27 @@ namespace ab {
 			result.indices.push_back(poleStart + i); //pole
 			result.indices.push_back(sideStart + i + 1);
 		}
+		//connect to corresponding vertex @ pole
+	
+		//sphere rows
+		int columns, start;
+
+		columns = numSegments + 1;
+
+		for (row = 1; row < numSegments - 1; row++) {
+			for (col = 0; col < numSegments; col++) {
+				start = row * columns + col;
+				//Tri 1
+				result.indices.push_back(start);
+				result.indices.push_back(start + 1);
+				result.indices.push_back(start + columns);
+				//Tri 2
+				result.indices.push_back(start + 1);
+				result.indices.push_back(start + columns + 1);
+				result.indices.push_back(start + columns);
+			}
+		}
+
 		return result;
 	}
 

@@ -16,6 +16,7 @@
 #include <ew/cameraController.h>
 #include <ab/procGen.h>
 
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void resetCamera(ew::Camera& camera, ew::CameraController& cameraController);
 
@@ -107,6 +108,7 @@ int main() {
 		prevTime = time;
 
 		cameraController.Move(window, &camera, deltaTime);
+
 
 		//Render
 		glClearColor(appSettings.bgColor.x, appSettings.bgColor.y, appSettings.bgColor.z,1.0f);
