@@ -86,16 +86,27 @@ int main() {
 	
 	//Initialize transforms
 	ew::Transform cubeTransform;
+
 	//p6
 	//Create mesh data 
+	ew::MeshData planeMeshData = ab::createPlane(1, 1, 10);
+	ew::MeshData cylinderMeshData = ab::createCylinder(1, .5, 10);
 	ew::MeshData sphereMeshData = ab::createSphere(0.5f, 64);
 
 	//Create mesh renderer
+	ew::Mesh planeMesh(planeMeshData);
+	ew::Mesh cylinderMesh(cylinderMeshData);
 	ew::Mesh sphereMesh(sphereMeshData);
 
 		//Initialize transform
+	ew::Transform planeTransform;
+	planeTransform.position = ew::Vec3(1.0f, 0.0f, 0.5f);
+
+	ew::Transform cylinderTransform;
+	cylinderTransform.position = ew::Vec3(3.2f, 0.0f, 0.0f);
+	
 	ew::Transform sphereTransform;
-	sphereTransform.position = ew::Vec3(1.0f, 0.0f, 0.0f);
+	sphereTransform.position = ew::Vec3(4.5f, 0.0f, 0.0f);
 
 	resetCamera(camera,cameraController);
 
@@ -125,6 +136,12 @@ int main() {
 		shader.setVec3("_Color", appSettings.shapeColor);
 		shader.setMat4("_ViewProjection", camera.ProjectionMatrix() * camera.ViewMatrix());
 		//p6
+		shader.setMat4("_Model", planeTransform.getModelMatrix());
+		planeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+
+		shader.setMat4("_Model", cylinderTransform.getModelMatrix());
+		cylinderMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+
 		shader.setMat4("_Model", sphereTransform.getModelMatrix());
 		sphereMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
