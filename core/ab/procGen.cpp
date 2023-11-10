@@ -38,7 +38,7 @@ namespace ab {
 		}
 		//connect to corresponding vertex @ pole
 		poleStart = result.vertices.size() - numSegments;
-		sideStart = poleStart - numSegments + 2;
+		sideStart = poleStart - numSegments - 2;
 
 		for (int i = 0; i < numSegments; i++) {
 			result.indices.push_back(sideStart + i);
