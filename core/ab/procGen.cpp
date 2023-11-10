@@ -37,13 +37,13 @@ namespace ab {
 			result.indices.push_back(sideStart + i + 1);
 		}
 		//connect to corresponding vertex @ pole
-		poleStart = 0;
-		sideStart = numSegments + 1;
+		poleStart = result.vertices.size() - numSegments;
+		sideStart = poleStart - numSegments + 2;
 
 		for (int i = 0; i < numSegments; i++) {
 			result.indices.push_back(sideStart + i);
-			result.indices.push_back(poleStart + i); //pole
 			result.indices.push_back(sideStart + i + 1);
+			result.indices.push_back(poleStart + i); //pole
 		}
 
 		//sphere rows indicies
@@ -119,8 +119,8 @@ namespace ab {
 
 		for (int i = 0; i <= numSegments; i++) {
 			result.indices.push_back(start + i);
-			result.indices.push_back(center);
 			result.indices.push_back(start + i + 1);
+			result.indices.push_back(center);
 		}
 
 		//Indicies
