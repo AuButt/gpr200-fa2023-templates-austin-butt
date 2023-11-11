@@ -3,6 +3,54 @@
 #include "../ew/ewMath/vec3.h"
 
 namespace ab {
+	ew::MeshData createTorus(int ringDraw, int numSegments, float inRadius, float outRadius) {
+		ew::Vertex vert;
+		ew::MeshData result;
+
+		//VERTEX DATA
+		//ring radius
+		float phi = 0.0;
+		float dp = (2 * ew::PI) / numSegments;
+		//torus rad
+		float theta = 0.0;
+		float dt = (2 * ew::PI) / ringDraw;
+		// i col j row
+		for (int i = 0; i < ringDraw; i++) {
+			theta = dt * i;
+
+			for (int j = 0; j < numSegments; j++) {
+				phi = dp * j;
+				vert.pos.x = cos(theta) * (outRadius + cos(phi) * inRadius);
+				vert.pos.y = sin(theta) * (outRadius + cos(phi) * inRadius);
+				vert.pos.z = sin(phi) * inRadius;
+				vert.normal = ew::Vec3(vert.pos.x, vert.pos.y, vert.pos.z);	//NORMALS
+				vert.uv = ew::Vec2(i, j);	//UV
+				result.vertices.push_back(vert);
+			}
+		}
+		
+		//INDICIES
+		int i1, i2, i3, i4;
+		for (int i = 0; i < ringDraw - 1; i++) {
+			
+			for (int j = 0; j < numSegments; j++) {
+				i1 = i + (j * numSegments);
+				i2 = (i + 1) + (j * numSegments);
+				i3 = i + ((j + 1) * numSegments);
+				i4 = (i + 1) + ((j + 1) * numSegments);
+				result.indices.push_back(i1);
+				result.indices.push_back(i3);
+				result.indices.push_back(i4);
+
+				result.indices.push_back(i1);
+				result.indices.push_back(i4);
+				result.indices.push_back(i2);
+			}
+		}
+
+		return result;
+	}
+
 	ew::MeshData createSphere(float radius, int numSegments) {
 		ew::Vertex vert;
 		ew::MeshData result;
@@ -20,6 +68,8 @@ namespace ab {
 				vert.pos.x = radius * cos(theta) * sin(phi);
 				vert.pos.y = radius * cos(phi);
 				vert.pos.z = radius * sin(theta) * sin(phi);
+				vert.normal = ew::Vec3(vert.pos.x, vert.pos.y, vert.pos.z);	//NORMALS
+				vert.uv = ew::Vec2(col, row);	//UV
 				result.vertices.push_back(vert);
 			}
 		}
@@ -32,6 +82,7 @@ namespace ab {
 		sideStart = numSegments + 1;
 
 		for (int i = 0; i < numSegments; i++) {
+
 			result.indices.push_back(sideStart + i);
 			result.indices.push_back(poleStart + i); //pole
 			result.indices.push_back(sideStart + i + 1);
@@ -62,6 +113,7 @@ namespace ab {
 				result.indices.push_back(start + 1);
 				result.indices.push_back(start + columns + 1);
 				result.indices.push_back(start + columns);
+
 			}
 		}
 
@@ -148,12 +200,15 @@ namespace ab {
 		ew::MeshData result;
 		int row, col, columns, start;
 
-		//Vertices
+		vert.normal = ew::Vec3{ +0.0f,+1.0f,+0.0f };	//NORMAL
+
+		//Vertices 
 		for (row = 0; row <= subdivisions; row++) {
 
 			for (col = 0; col <= subdivisions; col++) {
 				vert.pos.x = width * (col / subdivisions);
 				vert.pos.z = -height * (row / subdivisions);
+				vert.uv = ew::Vec2(col, row);	//UV
 				result.vertices.push_back(vert);
 			}
 		}

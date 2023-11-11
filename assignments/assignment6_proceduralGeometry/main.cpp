@@ -89,14 +89,16 @@ int main() {
 
 	//p6
 	//Create mesh data 
-	ew::MeshData planeMeshData = ab::createPlane(1, 1, 10);
+	ew::MeshData planeMeshData = ab::createPlane(1, 1, 5);
 	ew::MeshData cylinderMeshData = ab::createCylinder(1, .5, 10);
-	ew::MeshData sphereMeshData = ab::createSphere(0.5f, 64);
+	ew::MeshData sphereMeshData = ab::createSphere(0.5f, 20);
+	ew::MeshData torusMeshData = ab::createTorus(15, 15, 0.1, 0.5);
 
 	//Create mesh renderer
 	ew::Mesh planeMesh(planeMeshData);
 	ew::Mesh cylinderMesh(cylinderMeshData);
 	ew::Mesh sphereMesh(sphereMeshData);
+	ew::Mesh torusMesh(torusMeshData);
 
 		//Initialize transform
 	ew::Transform planeTransform;
@@ -107,6 +109,9 @@ int main() {
 	
 	ew::Transform sphereTransform;
 	sphereTransform.position = ew::Vec3(4.5f, 0.0f, 0.0f);
+
+	ew::Transform torusTransform;
+	torusTransform.position = ew::Vec3(6.0f, 0.0f, 0.0f);
 
 	resetCamera(camera,cameraController);
 
@@ -144,6 +149,9 @@ int main() {
 
 		shader.setMat4("_Model", sphereTransform.getModelMatrix());
 		sphereMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+
+		shader.setMat4("_Model", torusTransform.getModelMatrix());
+		torusMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
 		//Euler angels to forward vector
 		ew::Vec3 lightRot = appSettings.lightRotation * ew::DEG2RAD;
